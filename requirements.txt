@@ -1,0 +1,4 @@
+aiohttp==3.11.11
+aiosqlite==0.20.0
+pydantic==2.10.4
+SQLAlchemy==2.0.36

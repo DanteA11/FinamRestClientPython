@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "finam_rest_client"
+version = "1.0.0"
+package-mode = false
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pydantic = "^2.10.2"
+aiohttp = "^3.11.9"
+sqlalchemy = "^2.0.36"
+aiosqlite = "^0.20.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+flake8 = "^7.1.1"
+flake8-pyproject = "^1.2.3"
+flake8-docstrings = "^1.7.0"
+flake8-bugbear = "^24.10.31"
+isort = "^5.13.2"
+mypy = "^1.14.1"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.4"
+anyio = "^4.7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79
+
+[tool.isort]
+profile = "black"
+skip = [
+    ".git", "__pycache__", ".venv", "venv"
+]
+line_length = 79
+
+[tool.flake8]
+exclude = [
+    ".git", "__pycache__", ".venv", "venv", "tests"
+]
+max-line-length = 79
+extend-select = "B950"
+extend-ignore = ["E203", "E501", "E701", "D107"]
+per-file-ignores = "__init__.py:F401,F403"
+
+[tool.mypy]
+exclude = [".venv", "venv", "tests"]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]

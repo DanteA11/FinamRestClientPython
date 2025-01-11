@@ -1,0 +1,25 @@
+/.idea/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# Environments
+.venv
+*.env
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# sqlite
+*.db
