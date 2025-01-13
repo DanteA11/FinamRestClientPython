@@ -9,7 +9,7 @@ Python >= 3.12
 ## Зависимости
 Установить зависимости можно через [poetry](https://python-poetry.org/docs/) или pip:
 ```commandline
-poetry sync install --without test,dev
+poetry install --without test,dev
 ```
 ```commandline
 pip install -r requirements.txt
@@ -17,7 +17,7 @@ pip install -r requirements.txt
 
 ---
 ## Тестирование
-В модуле finam_rest_client.test доступны тесты для запросов к Api.
+В модуле finam_rest_client.tests доступны тесты для запросов к Api.
 
 __Важно__: 
 - Тестируется взаимодействие клиента с Api, а не классы и функции приложения, 
@@ -30,7 +30,7 @@ test_stop_create_and_cancel.py) будут выставляться заявки
 
 Библиотеки для запуска тестов можно установить с помощью [poetry](https://python-poetry.org/docs/) или pip:
 ```commandline
-poetry sync install with test
+poetry install with test
 ```
 ```commandline
 pip install -r requirements-test.txt
