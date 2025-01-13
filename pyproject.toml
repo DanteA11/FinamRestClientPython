@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "finam_rest_client"
-version = "1.0.0"
+version = "1.1.0"
 package-mode = false
 readme = "README.md"
 

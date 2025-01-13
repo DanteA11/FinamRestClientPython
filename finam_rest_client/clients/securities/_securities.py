@@ -6,12 +6,15 @@ from finam_rest_client.clients.base import BaseApiClient, BaseObjClient
 from finam_rest_client.models.request_models import SecuritiesRequest
 from finam_rest_client.models.response_models import Securities as Sec
 
-from .database import AbstractDBManager, DBManager
+from .database import DBManager
+from .database.base import DBManagerInterface
 
 
-class Securities(BaseObjClient):
+class SecuritiesWithDB(BaseObjClient):
     """
     Класс для получения данных об инструменте.
+
+    Использует БД для хранения информации.
 
     :param client: Клиент.
     :param drop_all: Опциональный параметр.
@@ -34,7 +37,7 @@ class Securities(BaseObjClient):
         self.__db = DBManager(drop_all=drop_all, db_url=db_url)
 
     @property
-    def db(self) -> AbstractDBManager:
+    def db(self) -> DBManagerInterface:
         """Менеджер для запросов в БД."""
         return self.__db
 
@@ -97,3 +100,71 @@ class Securities(BaseObjClient):
         """
         self.logger.debug("Добавление данных в БД.")
         return await self.db.add_securities(securities=securities)
+
+
+class SecuritiesWithoutDB(BaseObjClient):
+    """
+    Класс для получения данных об инструменте.
+
+    Не использует БД для хранения информации.
+
+    :param client: Клиент.
+    """
+
+    path = "/public/api/v1/securities"
+    method = "get"
+    logger = logging.getLogger("finam_rest_api_client.Securities")
+
+    def __init__(self, client: BaseApiClient, *args, **kwargs):
+        super().__init__(client)
+        self.__db = self.DBManagerMock()
+
+    @property
+    def db(self) -> DBManagerInterface:
+        """Менеджер для запросов в БД."""
+        return self.__db
+
+    class DBManagerMock(DBManagerInterface):
+        """Клас заглушка для подключения без создания сессии в базе данных."""
+
+        async def add_securities(self, *args, **kwargs):
+            """Заглушка."""
+            raise NotImplementedError("Метод не реализован.")
+
+        async def get_securities(self, *args, **kwargs):
+            """Заглушка."""
+            raise NotImplementedError("Метод не реализован.")
+
+        async def remove_securities(self, *args, **kwargs):
+            """Заглушка."""
+            raise NotImplementedError("Метод не реализован.")
+
+        async def start(self):
+            """Заглушка."""
+
+        async def stop(self):
+            """Заглушка."""
+
+    async def get_securities(
+        self,
+        req_securities: SecuritiesRequest | None = None,
+        **kwargs,
+    ) -> Sec:
+        """
+        Получение списка инструментов.
+
+        :param req_securities: Модель запроса на получение дневных свечей.
+
+        :return: Модель инструментов.
+        """
+        self.logger.debug(f"Метод запущен с параметрами: {req_securities=}.")
+        data = None
+        if req_securities:
+            data = await self.create_data(req_securities)
+        result = await self._execute_request(
+            resp_model=Sec,
+            params=data,
+            path=self.path,
+        )
+        self.logger.info("Данные получены из ответа Api.")
+        return result

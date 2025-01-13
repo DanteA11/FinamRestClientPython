@@ -34,7 +34,7 @@ from .base import BaseApiClient
 from .candles import Candles
 from .orders import Orders, Stops
 from .portfolio import Portfolio
-from .securities import Securities
+from .securities import SecuritiesWithDB, SecuritiesWithoutDB
 
 
 class FinamRestClient(BaseApiClient):
@@ -47,31 +47,34 @@ class FinamRestClient(BaseApiClient):
     Либо можно воспользоваться асинхронным менеджером контекста.
 
     :param token: Токен доступа к Api.
-    :param drop_all: Опциональный параметр.
-     Указывает нужно ли удалять таблицы.
+    :param with_db: Параметр определяет, стоит ли использовать
+      подключение к базе данных для сохранения информации о
+      биржевых инструментах. По умолчанию не используются.
+    :param drop_all: Опциональный параметр. Указывает нужно ли
+      удалять таблицы. Используется только при with_db=True
     :param db_url: Url базы данных для SQLAlchemy.
      Если не установлен, будет использоваться sqlite+aiosqlite.
      Важно добавить асинхронный движок при подключении.
      Например, postgresql+psycopg_async.
+     Используется только при with_db=True.
     """
 
     logger = logging.getLogger("finam_rest_client")
     logger.propagate = False
+    __with_db: bool = False
 
-    def __init__(
-        self,
-        token: str,
-        *,
-        drop_all: bool = False,
-        db_url: str = "",
-    ):
+    def __init__(self, token: str, *, with_db: bool = False, **kwargs):
         url = "https://trade-api.finam.ru"
         headers = {"X-Api-Key": token}
         super().__init__(url, headers)
 
         self._access_token = AccessToken(self)
         self._candles = Candles(self)
-        self._securities = Securities(self, drop_all=drop_all, db_url=db_url)
+        if with_db:
+            self.__with_db = with_db
+            self._securities = SecuritiesWithDB(self, **kwargs)
+        else:
+            self._securities = SecuritiesWithoutDB(self)  # type: ignore
         self._portfolio = Portfolio(self)
         self._orders = Orders(self)
         self._stops = Stops(self)
@@ -84,7 +87,8 @@ class FinamRestClient(BaseApiClient):
             self._securities.db.start(),
             super().__aenter__(),
         )
-        await self._securities.get_securities()
+        if self.__with_db:
+            await self._securities.get_securities()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -157,6 +161,7 @@ class FinamRestClient(BaseApiClient):
         self,
         board: str | None = None,
         seccode: str | None = None,
+        *,
         from_api: bool = False,
     ) -> Sec:
         """
@@ -165,7 +170,7 @@ class FinamRestClient(BaseApiClient):
         :param board: Режим торгов (необязательное поле для фильтрации);
         :param seccode: тикер инструмента (необязательное поле для фильтрации).
         :param from_api: Запросить данные из api. Если False,
-          то данные сперва запрашиваются в БД.
+          то данные сперва запрашиваются в БД. Только при with_db=True.
 
         :return: Модель инструментов.
         """
@@ -541,7 +546,8 @@ class FinamRestClient(BaseApiClient):
         Отмена ордера.
 
         Важно: если к лимитной заявке была привязана стоп-заявка,
-        то стоп-заявка не будет отменена, пока есть еще лимитные заявки по инструменту.
+        то стоп-заявка не будет отменена, пока есть еще
+        лимитные заявки по инструменту.
 
         :param client_id: Торговый код клиента;
         :param transaction_id: идентификатор отменяемой заявки.

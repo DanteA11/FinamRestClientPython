@@ -4,6 +4,7 @@ from finam_rest_client.clients import FinamRestClient
 
 token = ""
 c_id = ""
+with_db = False
 
 if not token or not c_id:
     pytest.exit(
@@ -18,7 +19,7 @@ def anyio_backend() -> str:
 
 @pytest.fixture(scope="session")
 async def client():
-    async with FinamRestClient(token) as client:
+    async with FinamRestClient(token, with_db=with_db) as client:
         yield client
 
 
