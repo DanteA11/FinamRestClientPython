@@ -35,7 +35,7 @@ class Candles(BaseObjClient):
         self.logger.debug(
             "Метод запущен с параметрами: req_candles=%s.", req_candles
         )
-        data = await self.create_data(req_candles)
+        data = self.create_data(req_candles)
         result = await self._execute_request(
             resp_model=DayCandles,
             params=data,
@@ -57,7 +57,7 @@ class Candles(BaseObjClient):
         self.logger.debug(
             "Метод запущен с параметрами: req_candles=%s.", req_candles
         )
-        data = await self.create_data(req_candles)
+        data = self.create_data(req_candles)
         result = await self._execute_request(
             resp_model=IntraDayCandles,
             params=data,

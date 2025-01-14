@@ -34,7 +34,7 @@ from .base import BaseApiClient
 from .candles import Candles
 from .orders import Orders, Stops
 from .portfolio import Portfolio
-from .securities import SecuritiesWithDB, SecuritiesWithoutDB
+from .securities import Securities
 
 
 class FinamRestClient(BaseApiClient):
@@ -47,57 +47,30 @@ class FinamRestClient(BaseApiClient):
     Либо можно воспользоваться асинхронным менеджером контекста.
 
     :param token: Токен доступа к Api.
-    :param with_db: Параметр определяет, стоит ли использовать
-      подключение к базе данных для сохранения информации о
-      биржевых инструментах. По умолчанию не используются.
-    :param drop_all: Опциональный параметр. Указывает нужно ли
-      удалять таблицы. Используется только при with_db=True
-    :param db_url: Url базы данных для SQLAlchemy.
-     Если не установлен, будет использоваться sqlite+aiosqlite.
-     Важно добавить асинхронный движок при подключении.
-     Например, postgresql+psycopg_async.
-     Используется только при with_db=True.
     """
 
     logger = logging.getLogger("finam_rest_client")
     logger.propagate = False
-    __with_db: bool = False
 
-    def __init__(self, token: str, *, with_db: bool = False, **kwargs):
+    def __init__(self, token: str):
         url = "https://trade-api.finam.ru"
         headers = {"X-Api-Key": token}
         super().__init__(url, headers)
 
         self._access_token = AccessToken(self)
         self._candles = Candles(self)
-        if with_db:
-            self.__with_db = with_db
-            self._securities = SecuritiesWithDB(self, **kwargs)
-        else:
-            self._securities = SecuritiesWithoutDB(self)  # type: ignore
+        self._securities = Securities(self)  # type: ignore
         self._portfolio = Portfolio(self)
         self._orders = Orders(self)
         self._stops = Stops(self)
 
     async def __aenter__(self) -> Self:
         """Вход в менеджер контекста."""
-        self.logger.info("Вход в менеджер контекста.")
         await asyncio.gather(
-            self.check_token(),
-            self._securities.db.start(),
+            self._access_token.check_token(),
             super().__aenter__(),
         )
-        if self.__with_db:
-            await self._securities.get_securities()
         return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        """Выход из менеджера контекста."""
-        self.logger.info("Выход из менеджера контекста.")
-        await asyncio.gather(
-            self._securities.db.stop(),
-            super().__aexit__(exc_type, exc_val, exc_tb),
-        )
 
     async def check_token(self) -> None:
         """
@@ -187,9 +160,7 @@ class FinamRestClient(BaseApiClient):
             from_api,
         )
         model = SecuritiesRequest(board=board, seccode=seccode)
-        result = await self._securities.get_securities(
-            req_securities=model, from_api=from_api
-        )
+        result = await self._securities.get_securities(req_securities=model)
         self.logger.info("Метод вернул: %s.", result)
         return result
 
@@ -435,6 +406,7 @@ class FinamRestClient(BaseApiClient):
         security_code: str,
         buy_sell: Literal["Buy", "Sell"],
         link_order: int,
+        expiration_date: datetime | None = None,
         use_stop_loss: bool = False,
         sl_activation_price: Decimal | str = "0",
         sl_price: Decimal | str = "0",
@@ -456,7 +428,6 @@ class FinamRestClient(BaseApiClient):
         tp_quantity_units: Literal["Percent", "Lots"] = "Lots",
         tp_time: int = 0,
         tp_use_credit: bool = True,
-        expiration_date: datetime | None = None,
         use_valid_before: bool = False,
         valid_before_type: Literal[
             "TillEndSession", "TillCancelled", "ExactTime"
@@ -517,21 +488,22 @@ class FinamRestClient(BaseApiClient):
         """
         self.logger.info(
             "Метод запущен с параметрами: client_id=%s, security_board=%s, "
-            "security_code=%s, buy_sell=%s, link_order=%s, use_stop_loss=%s, "
-            "sl_activation_price=%s, sl_price=%s, sl_market_price=%s, "
-            "sl_quantity_value=%s, sl_quantity_units=%s, sl_time=%s, "
-            "sl_use_credit=%s, use_take_profit=%s, tp_activation_price=%s, "
-            "tp_use_correction_price=%s, tp_correction_price_value=%s, "
-            "tp_correction_price_units=%s, tp_use_spread_price=%s, "
-            "tp_spread_price_value=%s, tp_spread_price_units=%s, "
-            "tp_market_price=%s, tp_quantity_value=%s, tp_quantity_units%s, "
-            "tp_time=%s, tp_use_credit=%s, expiration_date=%s, "
+            "security_code=%s, buy_sell=%s, link_order=%s, expiration_date=%s, "
+            "use_stop_loss=%s, sl_activation_price=%s, sl_price=%s, "
+            "sl_market_price=%s, sl_quantity_value=%s, sl_quantity_units=%s, "
+            "sl_time=%s, sl_use_credit=%s, use_take_profit=%s, "
+            "tp_activation_price=%s, tp_use_correction_price=%s, "
+            "tp_correction_price_value=%s, tp_correction_price_units=%s, "
+            "tp_use_spread_price=%s, tp_spread_price_value=%s, "
+            "tp_spread_price_units=%s, tp_market_price=%s, tp_quantity_value=%s, "
+            "tp_quantity_units%s, tp_time=%s, tp_use_credit=%s, "
             "use_valid_before=%s, valid_before_type=%s valid_before_time=%s.",
             client_id,
             security_board,
             security_code,
             buy_sell,
             link_order,
+            expiration_date,
             use_stop_loss,
             sl_activation_price,
             sl_price,
@@ -553,7 +525,6 @@ class FinamRestClient(BaseApiClient):
             tp_quantity_units,
             tp_time,
             tp_use_credit,
-            expiration_date,
             use_valid_before,
             valid_before_type,
             valid_before_time,
