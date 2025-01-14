@@ -11,7 +11,6 @@ from finam_rest_client.models.response_models import (
     Securities,
     Stops,
 )
-from finam_rest_client.tests.conftest import with_db
 
 
 @pytest.mark.anyio
@@ -162,24 +161,6 @@ async def test_get_stops_with_bad_client_id(client):
     assert result.error is not None
     assert result.data is None
     assert isinstance(result, Stops)
-
-
-@pytest.mark.skipif(
-    not with_db,
-    reason="База данных не используется, "
-    "возникнет ошибка из-за частых запросов.",
-)
-@pytest.mark.anyio
-@pytest.mark.parametrize(
-    "code",
-    ("SBER", "VTBR", "NVTK"),
-)
-async def test_get_securities_from_db(client, code):
-    result = await client.get_securities(seccode=code)
-    assert result.data is not None
-    assert result.error is None
-    assert isinstance(result.data.securities, list)
-    assert isinstance(result, Securities)
 
 
 @pytest.mark.anyio

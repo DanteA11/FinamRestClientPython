@@ -123,7 +123,7 @@ class BaseSubOrders(BaseObjClient, ABC):
 
         :return: Модель ответа на запрос.
         """
-        data = await self.create_data(req)
+        data = self.create_data(req)
         my_kwargs = {arg_type_name: data}
         result = await self._execute_request(  # type: ignore
             resp_model=self._response_model,  # type: ignore

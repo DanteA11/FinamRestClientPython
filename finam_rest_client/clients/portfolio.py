@@ -25,7 +25,7 @@ class Portfolio(BaseObjClient):
         self.logger.debug(
             "Метод запущен с параметрами: req_portfolio=%s.", req_portfolio
         )
-        data = await self.create_data(req_portfolio)
+        data = self.create_data(req_portfolio)
         result = await self._execute_request(
             resp_model=Pf,
             params=data,

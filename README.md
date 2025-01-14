@@ -30,7 +30,7 @@ test_stop_create_and_cancel.py) будут выставляться заявки
 
 Библиотеки для запуска тестов можно установить с помощью [poetry](https://python-poetry.org/docs/) или pip:
 ```commandline
-poetry install with test
+poetry install --with test
 ```
 ```commandline
 pip install -r requirements-test.txt

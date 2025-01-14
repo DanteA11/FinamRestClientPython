@@ -181,21 +181,7 @@ class BaseApiClient(BaseapiClientInterface, ABC):
         path: str,
         **kwargs,
     ) -> tuple[str, bool]:
-        """
-        Метод для отправки запросов к Api.
-
-        Используется внутри execute_request.
-
-        :param request_func: Метод сессии для вызова.
-        :param path: Uri запроса.
-        :param kwargs: Дополнительные аргументы для передачи в запрос.
-
-        :return: Текст ответа в json и True(если вернулся код 200) | False.
-
-        :raise aiohttp.ClientResponseError: Если при выполнении
-            запроса произошла ошибка.
-        """
-        async with session.request(method, path, **kwargs) as response:  # type: ignore
+        async with session.request(method, path, **kwargs) as response:
             if response.status != 200:
                 if response.content_type != "application/json":
                     response.raise_for_status()
@@ -235,9 +221,9 @@ class BaseObjClient(ABC):
         """Возвращает метод запроса."""
 
     @classmethod
-    async def create_data(cls, data: BaseModel) -> dict[str, Any]:
+    def create_data(cls, data: BaseModel) -> dict[str, Any]:
         """
-        Асинхронный метод по подготовке данных.
+        Метод по подготовке данных.
 
         Переводит модели Pydantic в словарь.
         """
