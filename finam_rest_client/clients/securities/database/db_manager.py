@@ -40,7 +40,6 @@ class DBManager(AbstractDBManager):
         _securities = securities.model_dump(mode="json", by_alias=True)
         query = insert(Security)
         async with self.session_maker() as session:
-            self.logger.debug(f"Создана сессия БД: {session}.")
             try:
                 await session.execute(query, _securities["data"]["securities"])
                 await session.commit()
@@ -49,7 +48,7 @@ class DBManager(AbstractDBManager):
             except IntegrityError as exc:
                 await session.rollback()
                 self.logger.warning(
-                    f"Данные не добавлены. Произошла ошибка: {exc}."
+                    "Данные не добавлены. Произошла ошибка: %s.", exc
                 )
             return False
 
@@ -65,10 +64,12 @@ class DBManager(AbstractDBManager):
         :return: Модель информации об инструментах или None,
         если информации нет в базе.
         """
-        self.logger.debug(f"Поиск данных в БД. {seccode=}, {board=}")
+        self.logger.debug(
+            "Поиск данных в БД. seccode=%s, board=%s", seccode, board
+        )
         query = await self._generate_query("select", seccode, board)
         async with self.session_maker() as session:
-            self.logger.debug(f"Создана сессия БД: {session}.")
+            self.logger.debug("Создана сессия БД: %s.", session)
             result = await session.execute(query)
             res = result.scalars().all()
             if not res:
@@ -89,14 +90,15 @@ class DBManager(AbstractDBManager):
 
         :return: Количество удаленных значений.
         """
-        self.logger.warning(f"Удаление данных из БД. {seccode=}, {board=}")
+        self.logger.warning(
+            "Удаление данных из БД. seccode=%s, board=%s", seccode, board
+        )
         query = await self._generate_query("delete", seccode, board)
         async with self.session_maker() as session:
-            self.logger.debug(f"Создана сессия БД: {session}.")
             result = await session.execute(query)
             res = result.rowcount
             await session.commit()
-            self.logger.warning(f"Количество удаленных значений: {res}.")
+            self.logger.warning("Количество удаленных значений: %s.", res)
             return res  # type: ignore
 
     @staticmethod

@@ -153,8 +153,12 @@ class BaseApiClient(BaseapiClientInterface, ABC):
         :return: Текст ответа в json и True(если вернулся код 200) | False.
         """
         self.logger.debug(
-            f"Метод вызван с параметрами: {method=}, "
-            f"{path=}, {another_session=}, {kwargs}."
+            "Метод вызван с параметрами: method=%s, "
+            "path=%s, another_session=%s, %s.",
+            method,
+            path,
+            another_session,
+            kwargs,
         )
         session: ClientSession = another_session or self.session
         try:
@@ -162,10 +166,12 @@ class BaseApiClient(BaseapiClientInterface, ABC):
                 method, session, path, **kwargs
             )
         except Exception as exc:
-            self.logger.warning(f"Возникла ошибка: {exc}")
+            self.logger.warning("Возникла ошибка: %s", exc)
             await self.session_end()
             raise BaseApiException(exc)
-        self.logger.debug(f"Метод вернул ответ: {response=}, {ok=}")
+        self.logger.debug(
+            "Метод вернул ответ: response=%s, ok=%s", response, ok
+        )
         return response, ok
 
     @staticmethod
@@ -235,9 +241,9 @@ class BaseObjClient(ABC):
 
         Переводит модели Pydantic в словарь.
         """
-        cls.logger.debug(f"Запущена подготовка данных: {data}.")
+        cls.logger.debug("Запущена подготовка данных: data=%s.", data)
         result = data.model_dump(mode="json", by_alias=True, exclude_none=True)
-        cls.logger.debug(f"Подготовка завершена: {result}.")
+        cls.logger.debug("Подготовка завершена: %s.", result)
         return result
 
     async def _execute_request(
@@ -256,8 +262,11 @@ class BaseObjClient(ABC):
         :return: Ответ сервера.
         """
         self.logger.debug(
-            f"Метод запущен с параметрами: {resp_model=}, "
-            f"{path=}, {kwargs=}."
+            "Метод запущен с параметрами: resp_model=%s, "
+            "path=%s, kwargs=%s.",
+            resp_model,
+            path,
+            kwargs,
         )
         path = path or self.path
         response, ok = await self.client.execute_request(
@@ -266,8 +275,9 @@ class BaseObjClient(ABC):
         result = resp_model.model_validate_json(response)
         if not ok:
             self.logger.warning(
-                f"Запрос {resp_model.__name__} "
-                f"вернулся с ошибкой: {result.error}."
+                "Запрос %s вернулся с ошибкой: %s.",
+                resp_model.__name__,
+                result.error,
             )
-        self.logger.debug(f"Метод вернул: {result}.")
+        self.logger.debug("Метод вернул: %s.", result)
         return result

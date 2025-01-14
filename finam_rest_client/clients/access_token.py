@@ -28,11 +28,9 @@ class AccessToken(BaseObjClient):
         async with ClientSession(
             base_url=self.client.url, headers=self.client.headers
         ) as session:
-            self.logger.debug(f"Создана новая сессия: {session}.")
             response, ok = await self.client.execute_request(
                 self.method, self.path, another_session=session
             )
-            self.logger.debug(f"Запрос вернул: {response=}, {ok=}")
             if not ok:
                 self.logger.warning("Токен провалил проверку.")
                 raise AuthenticationException()

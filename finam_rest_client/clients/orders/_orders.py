@@ -28,9 +28,11 @@ class Orders(BaseOrders):
 
         :return: Модель ответа на запрос списка ордеров.
         """
-        self.logger.debug(f"Метод запущен с параметрами: {req_orders=}")
+        self.logger.debug(
+            "Метод запущен с параметрами: req_orders=%s", req_orders
+        )
         result = await self._get(req_orders)
-        self.logger.debug(f"Метод вернул: {result}")
+        self.logger.debug("Метод вернул: %s", result)
         return result
 
     async def create_order(self, req_order: CreateOrderRequest) -> NewOrder:
@@ -41,9 +43,11 @@ class Orders(BaseOrders):
 
         :return: Модель ответа на создание нового ордера.
         """
-        self.logger.debug(f"Метод запущен с параметрами: {req_order=}")
+        self.logger.debug(
+            "Метод запущен с параметрами: req_order=%s", req_order
+        )
         result = await self._create(req_order)
-        self.logger.debug(f"Метод вернул: {result}")
+        self.logger.debug("Метод вернул: %s", result)
         return result
 
     async def cancel_order(self, req_order: CancelOrderRequest) -> CancelOrder:
@@ -54,7 +58,9 @@ class Orders(BaseOrders):
 
         :return: Модель ответа на отмену ордера.
         """
-        self.logger.debug(f"Метод запущен с параметрами: {req_order=}")
+        self.logger.debug(
+            "Метод запущен с параметрами: req_order=%s", req_order
+        )
         result = await self._cancel(req_order)
-        self.logger.debug(f"Метод вернул: {result}")
+        self.logger.debug("Метод вернул: %s", result)
         return result

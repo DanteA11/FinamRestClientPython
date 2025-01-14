@@ -55,7 +55,9 @@ class SecuritiesWithDB(BaseObjClient):
 
         :return: Модель инструментов.
         """
-        self.logger.debug(f"Метод запущен с параметрами: {req_securities=}.")
+        self.logger.debug(
+            "Метод запущен с параметрами: req_securities=%s.", req_securities
+        )
         data = None
         if req_securities:
             data = await self.create_data(req_securities)
@@ -157,7 +159,9 @@ class SecuritiesWithoutDB(BaseObjClient):
 
         :return: Модель инструментов.
         """
-        self.logger.debug(f"Метод запущен с параметрами: {req_securities=}.")
+        self.logger.debug(
+            "Метод запущен с параметрами: req_securities=%s.", req_securities
+        )
         data = None
         if req_securities:
             data = await self.create_data(req_securities)

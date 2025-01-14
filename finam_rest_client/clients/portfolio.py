@@ -22,12 +22,14 @@ class Portfolio(BaseObjClient):
 
         :return: Модель портфеля.
         """
-        self.logger.debug(f"Метод запущен с параметрами: {req_portfolio=}.")
+        self.logger.debug(
+            "Метод запущен с параметрами: req_portfolio=%s.", req_portfolio
+        )
         data = await self.create_data(req_portfolio)
         result = await self._execute_request(
             resp_model=Pf,
             params=data,
             path=self.path,
         )
-        self.logger.debug(f"Получена информация о портфеле: {result}.")
+        self.logger.debug("Получена информация о портфеле: %s.", result)
         return result

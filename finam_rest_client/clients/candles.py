@@ -32,14 +32,16 @@ class Candles(BaseObjClient):
 
         :return: Модель дневных свечей.
         """
-        self.logger.debug(f"Метод запущен с параметрами: {req_candles=}")
+        self.logger.debug(
+            "Метод запущен с параметрами: req_candles=%s.", req_candles
+        )
         data = await self.create_data(req_candles)
         result = await self._execute_request(
             resp_model=DayCandles,
             params=data,
             path=self.DAY,
         )
-        self.logger.debug(f"Метод вернул: {result}")
+        self.logger.debug("Метод вернул: %s.", result)
         return result
 
     async def get_intraday_candles(
@@ -52,12 +54,14 @@ class Candles(BaseObjClient):
 
         :return: Модель дневных свечей.
         """
-        self.logger.debug(f"Метод запущен с параметрами: {req_candles=}")
+        self.logger.debug(
+            "Метод запущен с параметрами: req_candles=%s.", req_candles
+        )
         data = await self.create_data(req_candles)
         result = await self._execute_request(
             resp_model=IntraDayCandles,
             params=data,
             path=self.INTRADAY,
         )
-        self.logger.debug(f"Метод вернул: {result}")
+        self.logger.debug("Метод вернул: %s", result)
         return result

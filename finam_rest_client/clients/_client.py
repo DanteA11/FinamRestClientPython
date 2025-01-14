@@ -135,8 +135,14 @@ class FinamRestClient(BaseApiClient):
         :return: Свечи.
         """
         self.logger.info(
-            f"Метод запущен с параметрами: {security_code=}, "
-            f"{security_board=}, {time_frame=}, {from_=}, {to=}, {count=}."
+            "Метод запущен с параметрами: security_code=%s, "
+            "security_board=%s, time_frame=%s, from_=%s, to=%s, count=%s.",
+            security_code,
+            security_board,
+            time_frame,
+            from_,
+            to,
+            count,
         )
         params = dict(
             security_board=security_board,
@@ -154,7 +160,7 @@ class FinamRestClient(BaseApiClient):
             func = self._candles.get_intraday_candles  # type: ignore
         model = model_type.model_validate(params)
         result = await func(req_candles=model)
-        self.logger.info(f"Получены свечи: {result}.")
+        self.logger.info("Получены свечи: %s.", result)
         return result
 
     async def get_securities(
@@ -175,13 +181,16 @@ class FinamRestClient(BaseApiClient):
         :return: Модель инструментов.
         """
         self.logger.info(
-            f"Метод запущен с параметрами: {board=}, {seccode=}, {from_api=}."
+            "Метод запущен с параметрами: board=%s, seccode=%s, from_api=%s.",
+            board,
+            seccode,
+            from_api,
         )
         model = SecuritiesRequest(board=board, seccode=seccode)
         result = await self._securities.get_securities(
             req_securities=model, from_api=from_api
         )
-        self.logger.info(f"Метод вернул: {result}.")
+        self.logger.info("Метод вернул: %s.", result)
         return result
 
     async def get_portfolio(
@@ -207,9 +216,14 @@ class FinamRestClient(BaseApiClient):
         :return: Модель портфеля.
         """
         self.logger.info(
-            f"Метод запущен с параметрами: {client_id=}, "
-            f"{include_currencies=}, {include_money=},"
-            f" {include_positions=}, {include_max_buy_sell=}."
+            "Метод запущен с параметрами: client_id=%s, "
+            "include_currencies=%s, include_money=%s, "
+            "include_positions=%s, include_max_buy_sell=%s.",
+            client_id,
+            include_currencies,
+            include_money,
+            include_positions,
+            include_max_buy_sell,
         )
         model = PortfolioRequest(
             client_id=client_id,
@@ -219,7 +233,7 @@ class FinamRestClient(BaseApiClient):
             include_max_buy_sell=include_max_buy_sell,
         )
         result = await self._portfolio.get_portfolio(req_portfolio=model)
-        self.logger.info(f"Получена информация о портфеле: {result}.")
+        self.logger.info("Получена информация о портфеле: %s.", result)
         return result
 
     async def get_orders(
@@ -237,11 +251,15 @@ class FinamRestClient(BaseApiClient):
         :param include_canceled: вернуть отмененные заявки;
         :param include_active: вернуть активные заявки.
 
-        :return: Модель Ответа на запрос cписка ордеров.
+        :return: Модель Ответа на запрос списка ордеров.
         """
         self.logger.info(
-            f"Метод запущен с параметрами: {client_id=}, "
-            f"{include_matched=}, {include_canceled=}, {include_active=}."
+            "Метод запущен с параметрами: client_id=%s, "
+            "include_matched=%s, include_canceled=%s, include_active=%s.",
+            client_id,
+            include_matched,
+            include_canceled,
+            include_active,
         )
         model = GetOrdersRequest(
             client_id=client_id,
@@ -250,7 +268,7 @@ class FinamRestClient(BaseApiClient):
             include_matched=include_matched,
         )
         result = await self._orders.get_orders(req_orders=model)
-        self.logger.info(f"Получена информация о заявках: {result}.")
+        self.logger.info("Получена информация о заявках: %s.", result)
         return result
 
     async def get_stops(
@@ -271,8 +289,12 @@ class FinamRestClient(BaseApiClient):
         :return: Модель ответа на запрос списка стоп-ордеров.
         """
         self.logger.info(
-            f"Метод запущен с параметрами: {client_id=}, "
-            f"{include_executed=}, {include_canceled=}, {include_active=}."
+            "Метод запущен с параметрами: client_id=%s, "
+            "include_executed=%s, include_canceled=%s, include_active=%s.",
+            client_id,
+            include_executed,
+            include_canceled,
+            include_active,
         )
         model = GetStopsRequest(
             client_id=client_id,
@@ -281,7 +303,7 @@ class FinamRestClient(BaseApiClient):
             include_executed=include_executed,
         )
         result = await self._stops.get_stops(req_stops=model)
-        self.logger.info(f"Получена информация о стоп-заявках: {result}.")
+        self.logger.info("Получена информация о стоп-заявках: %s.", result)
         return result
 
     async def create_order(
@@ -362,11 +384,26 @@ class FinamRestClient(BaseApiClient):
         :return: Модель ответа на создание нового ордера.
         """
         self.logger.info(
-            f"Метод запущен с параметрами: {client_id=}, {security_board=}, "
-            f"{security_code=}, {buy_sell=}, {quantity=}, {use_credit=}, "
-            f"{price=}, {property=}, {use_condition=}, {condition_type=}, "
-            f"{condition_price=}, {condition_time=}, {use_valid_before=}, "
-            f"{valid_before_type=}, {valid_before_time=}."
+            "Метод запущен с параметрами: client_id=%s, security_board=%s, "
+            "security_code=%s, buy_sell=%s, quantity=%s, use_credit=%s, "
+            "price=%s, property=%s, use_condition=%s, condition_type=%s, "
+            "condition_price=%s, condition_time=%s, use_valid_before=%s, "
+            "valid_before_type=%s, valid_before_time=%s.",
+            client_id,
+            security_board,
+            security_code,
+            buy_sell,
+            quantity,
+            use_credit,
+            price,
+            property,
+            use_condition,
+            condition_type,
+            condition_price,
+            condition_time,
+            use_valid_before,
+            valid_before_type,
+            valid_before_time,
         )
         data = dict(
             client_id=client_id,
@@ -388,7 +425,7 @@ class FinamRestClient(BaseApiClient):
             )
         model = CreateOrderRequest.model_validate(data)
         result = await self._orders.create_order(req_order=model)
-        self.logger.info(f"Получена информация о новой заявке: {result}.")
+        self.logger.info("Получена информация о новой заявке: %s.", result)
         return result
 
     async def create_stop(
@@ -479,17 +516,47 @@ class FinamRestClient(BaseApiClient):
         :return: Модель ответа на создание нового стоп-ордера.
         """
         self.logger.info(
-            f"Метод запущен с параметрами: {client_id=}, {security_board=}, "
-            f"{security_code=}, {buy_sell=}, {link_order=}, {use_stop_loss=}, "
-            f"{sl_activation_price=}, {sl_price=}, {sl_market_price=}, "
-            f"{sl_quantity_value=}, {sl_quantity_units=}, {sl_time=}, "
-            f"{sl_use_credit=}, {use_take_profit=}, {tp_activation_price=}, "
-            f"{tp_use_correction_price=}, {tp_correction_price_value=}, "
-            f"{tp_correction_price_units=}, {tp_use_spread_price=}, "
-            f"{tp_spread_price_value=}, {tp_spread_price_units=}, "
-            f"{tp_market_price=}, {tp_quantity_value=}, {tp_quantity_units}, "
-            f"{tp_time=}, {tp_use_credit=}, {expiration_date=}, "
-            f"{use_valid_before=}, {valid_before_type=} {valid_before_time=}."
+            "Метод запущен с параметрами: client_id=%s, security_board=%s, "
+            "security_code=%s, buy_sell=%s, link_order=%s, use_stop_loss=%s, "
+            "sl_activation_price=%s, sl_price=%s, sl_market_price=%s, "
+            "sl_quantity_value=%s, sl_quantity_units=%s, sl_time=%s, "
+            "sl_use_credit=%s, use_take_profit=%s, tp_activation_price=%s, "
+            "tp_use_correction_price=%s, tp_correction_price_value=%s, "
+            "tp_correction_price_units=%s, tp_use_spread_price=%s, "
+            "tp_spread_price_value=%s, tp_spread_price_units=%s, "
+            "tp_market_price=%s, tp_quantity_value=%s, tp_quantity_units%s, "
+            "tp_time=%s, tp_use_credit=%s, expiration_date=%s, "
+            "use_valid_before=%s, valid_before_type=%s valid_before_time=%s.",
+            client_id,
+            security_board,
+            security_code,
+            buy_sell,
+            link_order,
+            use_stop_loss,
+            sl_activation_price,
+            sl_price,
+            sl_market_price,
+            sl_quantity_value,
+            sl_quantity_units,
+            sl_time,
+            sl_use_credit,
+            use_take_profit,
+            tp_activation_price,
+            tp_use_correction_price,
+            tp_correction_price_value,
+            tp_correction_price_units,
+            tp_use_spread_price,
+            tp_spread_price_value,
+            tp_spread_price_units,
+            tp_market_price,
+            tp_quantity_value,
+            tp_quantity_units,
+            tp_time,
+            tp_use_credit,
+            expiration_date,
+            use_valid_before,
+            valid_before_type,
+            valid_before_time,
         )
         data = dict(
             client_id=client_id,
@@ -536,7 +603,9 @@ class FinamRestClient(BaseApiClient):
             )
         model = CreateStopRequest.model_validate(data)
         result = await self._stops.create_stop(req_stop=model)
-        self.logger.info(f"Получена информация о новой стоп-заявке: {result}.")
+        self.logger.info(
+            "Получена информация о новой стоп-заявке: %s.", result
+        )
         return result
 
     async def cancel_order(
@@ -555,13 +624,15 @@ class FinamRestClient(BaseApiClient):
         :return: Модель ответа на отмену ордера.
         """
         self.logger.info(
-            f"Метод запущен с параметрами: {client_id=}, {transaction_id=}."
+            "Метод запущен с параметрами: client_id=%s, transaction_id=%s.",
+            client_id,
+            transaction_id,
         )
         model = CancelOrderRequest(
             client_id=client_id, transaction_id=transaction_id
         )
         result = await self._orders.cancel_order(req_order=model)
-        self.logger.info(f"Получена информация об отмене заявки: {result}.")
+        self.logger.info("Получена информация об отмене заявки: %s.", result)
         return result
 
     async def cancel_stop(self, client_id: str, stop_id: int) -> CancelStop:
@@ -574,11 +645,13 @@ class FinamRestClient(BaseApiClient):
         :return: Модель ответа на отмену стоп-ордера.
         """
         self.logger.info(
-            f"Метод запущен с параметрами: {client_id=}, {stop_id=}."
+            "Метод запущен с параметрами: client_id=%s, stop_id=%s.",
+            client_id,
+            stop_id,
         )
         model = CancelStopRequest(client_id=client_id, stop_id=stop_id)
         result = await self._stops.cancel_stop(req_stop=model)
         self.logger.info(
-            f"Получена информация об отмене стоп-заявки: {result}."
+            "Получена информация об отмене стоп-заявки: %s.", result
         )
         return result

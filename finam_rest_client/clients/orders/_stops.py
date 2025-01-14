@@ -28,9 +28,11 @@ class Stops(BaseOrders):
 
         :return: Модель ответа на запрос списка стоп-ордеров.
         """
-        self.logger.debug(f"Метод запущен с параметрами: {req_stops=}")
+        self.logger.debug(
+            "Метод запущен с параметрами: req_stops=%s", req_stops
+        )
         result = await self._get(req_stops)
-        self.logger.debug(f"Метод вернул: {result}")
+        self.logger.debug("Метод вернул: %s", result)
         return result
 
     async def create_stop(self, req_stop: CreateStopRequest) -> NewStop:
@@ -41,9 +43,9 @@ class Stops(BaseOrders):
 
         :return: Модель ответа на создание нового стоп-ордера.
         """
-        self.logger.debug(f"Метод запущен с параметрами: {req_stop=}")
+        self.logger.debug("Метод запущен с параметрами: req_stop=%s", req_stop)
         result = await self._create(req_stop)
-        self.logger.debug(f"Метод вернул: {result}")
+        self.logger.debug("Метод вернул: %s", result)
         return result
 
     async def cancel_stop(self, req_stop: CancelStopRequest) -> CancelStop:
@@ -54,7 +56,7 @@ class Stops(BaseOrders):
 
         :return: Модель ответа на отмену стоп-ордера.
         """
-        self.logger.debug(f"Метод запущен с параметрами: {req_stop=}")
+        self.logger.debug("Метод запущен с параметрами: req_stop=%s", req_stop)
         result = await self._cancel(req_stop)
-        self.logger.debug(f"Метод вернул: {result}")
+        self.logger.debug("Метод вернул: %s", result)
         return result
