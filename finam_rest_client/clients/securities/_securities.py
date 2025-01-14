@@ -31,7 +31,7 @@ class SecuritiesWithDB(BaseObjClient):
     _data_default_params = {"seccode": None, "board": None}
 
     def __init__(
-        self, client: BaseApiClient, drop_all: bool, db_url: str = ""
+        self, client: BaseApiClient, drop_all: bool = False, db_url: str = ""
     ):
         super().__init__(client)
         self.__db = DBManager(drop_all=drop_all, db_url=db_url)
